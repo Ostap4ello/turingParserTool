@@ -3,8 +3,9 @@
 Turing parser - is a python script to parse different formats of Turing machines (for different tools I use at university to create Turing machines).
 
 ### Supported programs
-JFLAP 1.0
-Formal definition
+* JFLAP 1.0
+* [TuringMachine.io](https://turingmachine.io/)
+* Formal definition
 ...
 (more to come)
 
