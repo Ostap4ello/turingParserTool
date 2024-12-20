@@ -33,7 +33,7 @@ def expand_list_keys(input_file_path, output_file_path):
         f.writelines(updated_lines)
 
 
-def read(file_name) -> turing_machine.TuringMachine:
+def read(turing: turing_machine.TuringMachine, file_name: str):
     # substitute ['key1', 'key2']: value -> key1: value and key2: value,
     # as the yaml parser does not support list keys
     tmp_file = tempfile.NamedTemporaryFile(delete=True)
@@ -44,14 +44,13 @@ def read(file_name) -> turing_machine.TuringMachine:
         tmpdata = yaml.full_load(f)
 
         # Parse the YAML data
-        turing = turing_machine.TuringMachine()
 
         if turing.name.strip() == "":
             turing.name = "none"
 
         turing.start_state = tmpdata["start state"]
 
-        for oldstate, info in tmpdata.table.items():
+        for oldstate, info in tmpdata["table"].items():
             # fill turing.states
             if oldstate not in turing.states:
                 turing.states.append(oldstate)
@@ -59,9 +58,6 @@ def read(file_name) -> turing_machine.TuringMachine:
                 continue    # skip empty states
 
             for input, command in info.items():
-                # fill turing.input_alphabet
-                if input not in turing.input_alphabet:
-                    turing.input_alphabet.append(input)
 
                 # output
                 if "write" in command.keys():
@@ -81,6 +77,13 @@ def read(file_name) -> turing_machine.TuringMachine:
                     print(f"tm_tmio_yaml: No direction provided for \
                         {oldstate}, {input}")
                     exit(1)
+
+                if newstate not in turing.states:
+                    turing.states.append(newstate)
+                if output not in turing.tape_alphabet:
+                    turing.tape_alphabet.append(output)
+                if input not in turing.input_alphabet:
+                    turing.input_alphabet.append(input)
 
                 # put entry into the table
                 turing.transition_table[(oldstate, input)] = \
@@ -110,14 +113,13 @@ def read(file_name) -> turing_machine.TuringMachine:
         exit(1)
 
     print("tm_tmio_yaml: Data read successfully")
-    return turing
 
 
-def write(turing: turing_machine.TuringMachine, file_name="none"):
+def write(turing: turing_machine.TuringMachine, file_name):
 
-    if file_name == "none":
-        print("No file path provided")
-        return
+    # if file_name == "none":
+    #     print("No file path provided")
+    #     return
 
     with open(file_name, "w") as f:
         f.write(f"name: {turing.name}\n")
@@ -155,7 +157,7 @@ def write(turing: turing_machine.TuringMachine, file_name="none"):
                     input, direction, newstate, output))
         for state in states:
             f.write(f"  {state}:\n")
-    print("tm_tmio_yaml: Data written successfully")
+    print(f"tm_tmio_yaml: Data written successfully to {file_name}")
 
 
 # def read_old(file_name="none") -> dict[str, any]:
