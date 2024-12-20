@@ -7,13 +7,13 @@ def write(turing: turing_machine.TuringMachine, file_name: str):
 
         row = "Q = { "
         for state in turing.states:
-            row += state + " "
+            row += state + ", "
         row += "}\n"
         f.write(row)
 
         row = "T = { "
         for symbol in turing.tape_alphabet:
-            row += symbol + " "
+            row += symbol + ", "
         row += "}\n"
         f.write(row)
 
@@ -21,7 +21,7 @@ def write(turing: turing_machine.TuringMachine, file_name: str):
 
         row = "Σ = { "
         for symbol in turing.input_alphabet:
-            row += symbol + " "
+            row += symbol + ", "
         row += "}\n"
         f.write(row)
 

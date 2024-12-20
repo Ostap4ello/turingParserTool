@@ -19,22 +19,31 @@ class TuringMachine:
 
     def check(self) -> bool:
         if self.start_state not in self.states:
+            print("Start state not in states")
             return False
-        if self.accept_state not in self.states:
-            return False
+        for accept_state in self.accept_state:
+            if accept_state not in self.states:
+                print("Accept state not in states")
+                return False
+
         for (old_state, input_symbol), \
                 (new_state, output_symbol, direction) \
                 in self.transition_table.items():
 
             if old_state not in self.states:
+                print("Old state not in states")
                 return False
             if new_state not in self.states:
+                print("New state not in states")
                 return False
             if input_symbol not in self.input_alphabet:
+                print("Input symbol not in input alphabet")
                 return False
             if output_symbol not in self.tape_alphabet:
+                print("Output symbol not in tape alphabet")
                 return False
             if direction not in ["Left", "Right"]:
+                print("Invalid direction")
                 return False
 
         return True
