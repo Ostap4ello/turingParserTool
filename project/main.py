@@ -1,82 +1,118 @@
+from locale_json import *
 import turing_machine
 import tm_tmio_yaml
 import tm_formal
 import tm_jflap
 
+import enum
 from pathlib import Path
 
-
 tm_list = []  # list of Turing Machines
+locale = load_locale("locale.json")
 
+class State(enum.Enum):
+    MAIN_INTRO = 0
+    MAIN_GETOPTION = 1
+    TM_IMPORT = 2
+    TM_EXPORT = 3
+    EXIT = -1
+
+def main():
+    state = State.MAIN_INTRO
+
+    while True:
+        if state == State.MAIN_INTRO:
+            state = intro()
+        elif state == State.MAIN_GETOPTION:
+            state = getoption()
+        elif state == State.TM_IMPORT:
+            state = import_tm()
+        elif state == State.TM_EXPORT:
+            state = export_tm()
+        elif state == State.EXIT:
+            break
+
+
+# states
+def intro() -> State:
+    print_message("info", "intro", locale)
+    return State.MAIN_GETOPTION
 
 def getoption():
-    print("")
-    print("Please select an option:")
-    print("1. Import a Turing Machine")
-    print("2. Export a Turing Machine")
-    print("3. Exit")
+    print_message("info", "getoption", locale)
     option = input("Select an option: ")
-    return option
+    if option == "1":
+        return State.TM_IMPORT
+    elif option == "2":
+        return State.TM_EXPORT
+    elif option == "3":
+        return State.EXIT
+    else:
+        print_message("error", "invalid_option", locale)
+        return State.MAIN_GETOPTION
 
+def import_tm() -> State:
+    print_message("info", "ask_for_file", locale)
 
-def import_tm():
-    print("")
-    print("Please enter file name: ")
     file_name = input().strip()
 
     if not Path(file_name).is_file():
-        print("File not found")
-        return
+        print_message("error", "file_not_found", locale)
+        return State.MAIN_GETOPTION
 
     tm = turing_machine.TuringMachine()
+
     if Path(file_name).suffix == ".yaml":
-        tm_tmio_yaml.read(tm, file_name)
-    elif Path(file_name).suffix == ".xml":
-        # tm = tm_jflap.read(file_name)
-        print("JFLAP import not supported yet")
+        status = tm_tmio_yaml.read(tm, file_name)
+    elif Path(file_name).suffix == ".jff":
+        status = tm_jflap.read(tm, file_name)
     elif Path(file_name).suffix == ".txt":
-        # tm = tm_formal.read(file_name)
-        print("Formal import not supported yet")
+        print_message("error", "turing_machine_not_supported", locale)
+        status = 0
     else:
-        print("Invalid file type")
-        return
+        print_message("error", "file_invalid_type", locale)
+        status = 0
+        return State.MAIN_GETOPTION
 
     if tm.check() is False:
-        print("Turing Machine is not valid")
-        return
+        print_message("error", "turing_machine_invalid", locale)
+        return State.MAIN_GETOPTION
+
+    if status == 0:
+        pass
 
     tm_list.append(tm)
 
-    print("Turing Machine imported successfully, as index", len(tm_list)-1)
+    print_message("info", "turing_machine_imported", locale)
+    print("Index: %d" % (len(tm_list)))
 
+    return State.MAIN_GETOPTION
 
-def export_tm():
+def export_tm() -> State:
+
     if len(tm_list) == 0:
-        print("No Turing Machines to export")
-        return
+        print_message("error", "turing_machine_no_to_export", locale)
+        return State.MAIN_GETOPTION
 
     elif len(tm_list) > 1:
-        print("Please select Turing Machine:")
+        print_message("info", "ask_for_turing_machine", locale)
         for i, tm in enumerate(tm_list):
             print(f"{i + 1}. {tm.name}")
-        print("")
+        print()
         option = int(input("Select an option: ").strip())
         if option < 1 or option > len(tm_list):
-            print("Invalid option")
-            return
+            print_message("error", "invalid_option", locale)
+            return State.MAIN_GETOPTION
 
         tm = tm_list[option - 1]
     else:
         tm = tm_list[0]
 
-    print("Please select Export type:")
-    print("1. Export to YAML")
-    print("2. Export to Formal")
-    print("3. Export to JFLAP")
+    print_message("info", "export_options", locale)
 
     option = int(input("Select an option: ").strip())
 
-    print("Please enter file name (if blank):")
+    print_message("info", "ask_for_file", locale)
 
     file_name = input().strip()
     if file_name == "":
@@ -89,20 +125,11 @@ def export_tm():
     elif option == 3:
         tm_jflap.write(tm, file_name)
     else:
-        print("Invalid option")
-        return
+        print_message("error", "invalid_option", locale)
+
+    return State.MAIN_GETOPTION
 
 
+# start program
 if __name__ == "__main__":
-
-    print("Hello, user!")
-    print("This is a Turing Machine Parser")
-
-    while True:
-        option = getoption().strip()
-        if option == "1":
-            import_tm()
-        elif option == "2":
-            export_tm()
-        elif option == "3":
-            break
+    main();

@@ -1,0 +1,40 @@
+{
+    "_locale_info": {
+        "name": "English",
+        "code": "en"
+    },
+    "info": {
+        "intro": [
+            "Hello, user!",
+            "This is a Turing Machine Parser."
+        ],
+        "program_options": [
+            "Please select an option:",
+            "1. Import a Turing Machine",
+            "2. Export a Turing Machine",
+            "3. Exit",
+            "Please select an option: "
+        ],
+        "ask_for_file": [
+            "Please enter the file path: "
+        ],
+        "ask_for_turing_machine": [
+            "Please choose the Turing Machine: "
+        ],
+        "turing_machine_imported": "Turing Machine imported successfully.",
+        "export_options": [
+            "Please select Export type:",
+            "1. Export to YAML",
+            "2. Export to Formal",
+            "3. Export to JFLAP"
+        ],
+    },
+    "error": {
+        "option_invalid": "Invalid option.",
+        "file_not_found": "File not found.",
+        "file_invalid_type": "Invalid file type.",
+        "turing_machine_invalid": "Invalid Turing Machine.",
+        "turing_machine_not_supported": "This feature is not supported yet.",
+        "turing_machine_no_to_export": "No Turing Machine to export.",
+    }
+}
